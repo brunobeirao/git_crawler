@@ -2,21 +2,30 @@ version: '3'
 
 services:
   db:
-    image: postgres
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
   web:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8990
     volumes:
       - .:/code
     ports:
-      - "8000:8000"
-    depends_on:
-      - migration
-      - db
-  migration:
-    image: uzman
-    command: python manage.py migrate --noinput
-    volumes:
-      - .:/code
+      - "8990:8990"
     depends_on:
       - db
+    links: # <- here
+      - db
+#  migration:
+#    command: python manage.py migrate --noinput
+#    volumes:
+#      - .:/code
+#    depends_on:
+#      - db

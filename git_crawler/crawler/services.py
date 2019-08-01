@@ -35,6 +35,18 @@ class CrawlerService:
     def get_commits(self):
         with requests.session() as session:
             session_logged = self.login(session)
-            resp = session_logged.get(self.url_commits)
-            result = BeautifulSoup(resp.text, 'html.parser')
-            print(result.prettify())
+            commit_page = session_logged.get(self.url_commits)
+            soup = BeautifulSoup(commit_page.text, 'html.parser')
+            self.find_commits(soup)
+
+    def find_commits(self, soup):
+        for commits in soup.findAll("div", {"class": "commit-content qa-commit-content"}):
+            self.save_commits(commits)
+
+    def save_commits(self, commits):
+        title = commits.a
+        hash_find = commits.find("span", {"class": "commit-row-message d-inline d-sm-none"})
+        hash_commit = hash_find.get_text().strip().splitlines()
+        committer_find = commits.find("div", {"class": "committer"})
+        committer = committer_find.a
+        date_ = committer_find.find("time")

@@ -1,5 +1,5 @@
 requests
-Django==1.11.21
+Django==1.11.28
 pytz==2019.1
 djangorestframework==3.9.0
 django-rest-swagger==2.1.2
